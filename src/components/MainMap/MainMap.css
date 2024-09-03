@@ -1,0 +1,25 @@
+.main-map-container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100%;
+}
+
+.map-container {
+  flex-grow: 1;
+  height: 100vh;
+  position: relative;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .main-map-container {
+    flex-direction: column;
+  }
+
+  .map-container {
+    margin-left: 0;
+    margin-bottom: 200px;
+    width: 100%;
+  }
+}

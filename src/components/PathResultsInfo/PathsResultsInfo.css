@@ -1,0 +1,41 @@
+.paths-results-info-box {
+  position: relative;
+  margin-top: 1rem;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.loading-icon {
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.route-details {
+  padding: 10px;
+}
+
+.feature-container {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.feature-properties ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.feature-properties li {
+  margin-bottom: 5px;
+}
