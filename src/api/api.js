@@ -7,7 +7,8 @@ export const fetchGreenPathsPathsAndSegments = async (
   origin,
   destination,
   city,
-  exposure
+  exposure,
+  transportMode
 ) => {
   try {
     // Extract latitude and longitude and convert them to the expected format
@@ -19,6 +20,7 @@ export const fetchGreenPathsPathsAndSegments = async (
       origin: formattedOrigin,
       destination: formattedDestination,
       exposure: exposure,
+      transportMode: transportMode,
     });
 
     console.log(response.data);

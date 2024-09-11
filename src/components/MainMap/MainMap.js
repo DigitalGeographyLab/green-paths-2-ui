@@ -5,13 +5,18 @@ import {
   CircleMarker,
   Popup,
   useMapEvents,
-  GeoJSON,
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './MainMap.css';
+
 import { fetchGreenPathsPathsAndSegments } from '../../api/api';
 import MainSideBar from '../MainSideBar/MainSideBar';
+import EdgeLines from '../EdgeLines/EdgeLines';
+import Legend from '../Legend/Legend';
+import ODSelectButtons from '../ODSelectButtons/ODSelectButtons';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import InfoPopup from '../InfoPopup/InfoPopup';
 
 function MyMap() {
   const [origin, setOrigin] = useState(null);
@@ -20,7 +25,7 @@ function MyMap() {
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupLocation, setPopupLocation] = useState([51.505, -0.09]); // Default location
 
-  const [highlightedMarkers, setHighlightedMarkers] = useState([]); // State for markers
+  const [highlightedPathId, setHighlightedPathId] = useState(null); // State to track highlighted path ID
 
   const [routeData, setRouteData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -33,12 +38,16 @@ function MyMap() {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State to manage sidebar open/close
 
+  const [isPathClicked, setIsPathClicked] = useState(false);
+
   const markerRef = useRef(null);
 
   const mapRef = useRef();
   const sidebarRef = useRef();
 
   const helsinkiCenter = [60.1959, 24.9384];
+
+  let clickedOnPath = false; // Use this flag to detect if a path was clicked
 
   // const boundingBox = [
   //   [60.4, 24.6], // Top left corner
@@ -78,18 +87,16 @@ function MyMap() {
   const MapClickHandler = () => {
     useMapEvents({
       click(e) {
-        if (bounds.contains(e.latlng)) {
+        if (!clickedOnPath && bounds.contains(e.latlng)) {
           setPopupLocation(e.latlng);
-          setClickedLocation(e.latlng); // Close the popup
-          setPopupVisible(true); // Close the popup
-        } else {
-          alert('Please select a point within the allowed area.');
+          setClickedLocation(e.latlng);
+          setPopupVisible(true);
         }
+        clickedOnPath = false; // Reset after handling the click
       },
     });
     return null;
   };
-
   useEffect(() => {
     if (popupVisible && markerRef.current) {
       markerRef.current.openPopup(); // Ensure popup is opened when marker is created
@@ -116,18 +123,25 @@ function MyMap() {
     setLoading(true);
     try {
       setRouteData(null);
-      var data = await fetchGreenPathsPathsAndSegments(
+      var routeData = await fetchGreenPathsPathsAndSegments(
         origin,
         destination,
         city,
         exposureType,
         transportMode
       );
-      setRouteData(data);
+      setRouteData(routeData);
 
       if (mapRef.current && origin && destination) {
         const bounds = L.latLngBounds([origin, destination]);
-        mapRef.current.fitBounds(bounds, { padding: [100, 100] });
+        mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+      }
+
+      if (routeData.path_FC.features.length > 0) {
+        handlePathClick(
+          routeData.path_FC.features[0].properties.path_id,
+          routeData.path_FC.features[0].geometry.coordinates
+        );
       }
 
       if (sidebarRef.current) {
@@ -142,60 +156,26 @@ function MyMap() {
     }
   };
 
-  // TODO: MAKE MAPPINGS FOR EACH EXPOSURE TYPE
-
-  // Adjusted color mapping function
-  const getColorBasedOnExposure = (value) => {
-    if (value <= -0.75) return '#006400'; // Dark green for very good
-    if (value > -0.75 && value <= -0.5) return '#32CD32'; // Lime green
-    if (value > -0.5 && value < 0) return '#ADFF2F'; // Light green
-    if (value === 0) return '#FFFF00'; // Yellow in the middle
-    if (value > 0 && value < 0.5) return '#FFA500'; // Orange for bad exposure
-    if (value >= 0.5 && value < 0.75) return '#FF6347'; // Light red
-    if (value >= 0.75) return '#FF0000'; // Dark red for very bad
-    return '#808080'; // Gray for undefined or unexpected values
-  };
-
-  const style = (feature) => {
-    const exposureValue = feature.properties.exposure_norm_value;
-    const color = getColorBasedOnExposure(exposureValue);
-
-    return {
-      color: color,
-      weight: 4,
-      opacity: 0.7,
-    };
-  };
-
-  // TODO: REMOVE POPUP AND MAYBE MAKE FOCUS TO THE PATH
-  const onEachFeature = (feature, layer) => {
-    if (
-      feature.properties &&
-      feature.properties.exposure_norm_value !== undefined
-    ) {
-      layer.bindPopup(
-        `<p>Exposure: ${feature.properties.exposure_norm_value}</p>`
-      );
+  const handleTransportChange = (mode) => {
+    if (mode !== transportMode) {
+      setTransportMode(mode);
+      setRouteData(null);
     }
   };
 
-  const handleTransportChange = (mode) => {
-    setTransportMode(mode);
-    console.log(`Transport mode changed to: ${mode}`);
-  };
-
   const handleExposureChange = (type) => {
-    setExposureType(type);
-    console.log(`Exposure type changed to: ${type}`);
+    if (type !== exposureType) {
+      setExposureType(type);
+      setRouteData(null);
+    }
   };
 
-  const handlePathClick = (pathId, coordinates) => {
-    // TODO: MAKE BETTER
-    const markers = coordinates.map((coord) => ({
-      lat: coord[1],
-      lng: coord[0],
-    }));
-    setHighlightedMarkers(markers);
+  const handlePathClick = (pathId, _, e) => {
+    // if (e != null) {
+    //   e.stopPropagation(); // Prevent the map click from firing
+    // }
+    clickedOnPath = true; // Path was clicked
+    setHighlightedPathId(pathId);
   };
 
   const toggleSidebar = () => {
@@ -210,13 +190,39 @@ function MyMap() {
     }
   }, [isSidebarOpen]); // Re-run this effect whenever the sidebar state changes
 
+  // TODO: MAKE WORK
+  const handleError = () => {
+    // Display the error message immediately
+    setError('Something went wrong!');
+
+    const timer = setTimeout(() => {
+      setError(null);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  };
+
   const isRoutingDisabled = !origin | !destination;
+
+  useEffect(() => {
+    if (mapRef.current && mapRef.current.leafletElement) {
+      const map = mapRef.current.leafletElement;
+
+      // Check if panes are not already created to avoid re-creating them
+      if (!map.getPane('borderPane')) {
+        map.createPane('borderPane');
+        map.getPane('borderPane').style.zIndex = 399;
+      }
+      if (!map.getPane('linePane')) {
+        map.createPane('linePane');
+        map.getPane('linePane').style.zIndex = 400;
+      }
+    }
+  }, [mapRef]);
 
   return (
     <div className="main-map-container">
-      {/* TODO MAKE ERROR MESSAGE COMPONENT */}
-      {/* display error message in a div */}
-      {error && <div>{error}</div>}
+      {error && <ErrorMessage error={error} />}
       <MainSideBar
         ref={sidebarRef}
         handleRouting={handleRouting}
@@ -232,6 +238,7 @@ function MyMap() {
         loading={loading}
         isSidebarOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
+        highlightedPathId={highlightedPathId}
       />
       <div className="map-container">
         <MapContainer
@@ -240,6 +247,9 @@ function MyMap() {
           style={{ height: '100vh', width: '100%' }}
           ref={mapRef}
         >
+          {routeData && <Legend exposureType={exposureType} />}
+          <InfoPopup />
+
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -251,41 +261,33 @@ function MyMap() {
               position={popupLocation}
               onClose={() => setPopupVisible(false)}
             >
-              <div>
-                <button onClick={handleSetOrigin}>Set Origin</button>
-                <button onClick={handleSetDestination}>Set Destination</button>
-              </div>
+              <ODSelectButtons
+                handleSetOrigin={handleSetOrigin}
+                handleSetDestination={handleSetDestination}
+              />
             </Popup>
           )}
 
           {routeData && (
-            <>
-              {/* <GeoJSON data={routeData.path_FC} onEachFeature={onEachFeature} /> */}
-              <GeoJSON
-                data={routeData.edge_FC}
-                style={style}
-                onEachFeature={onEachFeature}
-              />
-            </>
+            <EdgeLines
+              routeData={routeData}
+              exposure={exposureType}
+              highlightedPathId={highlightedPathId}
+              handlePathClick={handlePathClick}
+              zIndex={2}
+              style={{ zIndex: 1 }}
+              mapRef={mapRef}
+            />
           )}
 
           {origin && <CircleMarker center={origin} color="green" radius={5} />}
           {destination && (
-            <CircleMarker center={destination} color="orange" radius={5} />
+            <CircleMarker center={destination} color="purple" radius={5} />
           )}
 
           {/* TODO: MAKE WORK */}
           {/* Render Helsinki with normal color */}
           {/* <Polygon positions={helsinkiBorder} pathOptions={{ color: 'blue', fillOpacity: 0.5 }} /> */}
-
-          {highlightedMarkers.map((marker, index) => (
-            <CircleMarker
-              key={index}
-              center={[marker.lat, marker.lng]}
-              radius={1}
-              color="gray"
-            />
-          ))}
         </MapContainer>
       </div>
     </div>

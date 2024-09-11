@@ -39,3 +39,16 @@
 .feature-properties li {
   margin-bottom: 5px;
 }
+
+.exposurebars-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.travel-duration-info-item {
+  display: flex;
+  font-size: small;
+  align-items: center;
+}

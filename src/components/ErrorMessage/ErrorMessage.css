@@ -1,0 +1,32 @@
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px); /* Optional for sliding in */
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px); /* Optional for sliding out */
+  }
+}
+
+.error-bar {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 0, 0, 0.8); /* Red background for error */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  z-index: 9999; /* Ensure it's above the map */
+  animation: fadeInOut 5s ease-in-out forwards; /* Control duration */
+}

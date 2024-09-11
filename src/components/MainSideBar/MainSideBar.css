@@ -9,7 +9,7 @@
   left: 0;
   z-index: 1000;
   max-width: 40%;
-  width: 25rem;
+  width: 40%;
   height: 100vh;
   overflow-y: auto;
   transition: width 0.3s ease-in-out;
@@ -21,12 +21,32 @@
   padding: 15px 0;
 }
 
-.sidebar.closed .navbar-content {
+.sidebar.closed .hide-on-close {
   display: none;
 }
 
+.main-title-container {
+  display: flex;
+  justify-content: space-between !important;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.main-title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 1rem;
+  padding-bottom: 0;
+}
+
+.main-title-text {
+  display: flex;
+  align-self: center;
+}
+
 .exposures small {
-  font-size: 50%;
+  font-size: 75%;
 }
 
 .exposures button {
@@ -47,6 +67,9 @@
   top: 10px;
   right: 10px;
   z-index: 1001;
+  align-self: center;
+  margin: 0 !important;
+  padding-top: 0 !important;
 }
 
 .navbar-row {
@@ -92,6 +115,17 @@
     min-height: 0;
   }
 
+  .main-title {
+    padding-bottom: 0.5rem;
+  }
+
+  .main-title-container {
+    display: flex;
+    justify-content: center !important;
+    width: 100%;
+    flex-wrap: none !important;
+  }
+
   .map-container {
     width: 100%;
     margin-left: 0;
@@ -104,20 +138,20 @@
     right: 0;
     margin: auto;
     padding: 0;
+    align-self: center;
+    transform: rotate(-90deg);
   }
 
   .toggle-button .sidebar.closed {
     transform: rotate(90deg);
   }
 
-  .toggle-button {
-    height: 1rem;
-    transform: rotate(-90deg);
-    padding: 0 !important;
-  }
-
   .loading-circle {
     height: auto;
     margin-top: 0.5rem;
+  }
+
+  .show-on-mobile {
+    display: flex !important;
   }
 }

@@ -12,6 +12,10 @@
   transition: margin-left 0.3s ease-in-out;
 }
 
+.leaflet-control-zoom {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .main-map-container {
     flex-direction: column;

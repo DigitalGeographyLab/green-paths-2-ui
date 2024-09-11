@@ -1,0 +1,155 @@
+/* Wrapper div to prevent map clicks */
+.info-popup-container {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.info-popup-click-blocker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: transparent;
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* Styles for the Info Button */
+.info-popup-button {
+  padding: 5px;
+  background-color: transparent;
+  color: black;
+}
+
+.info-popup-button:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Slight hover effect */
+}
+
+.info-icon {
+  font-size: 24px;
+}
+
+/* Popup Content */
+.info-popup-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid black;
+  padding: 20px;
+  z-index: 1001;
+  width: 70vw; /* Increased width */
+  height: 70vh; /* Increased height */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow-y: auto; /* Allow scrolling if content exceeds the height */
+}
+
+/* Header styling for popup content */
+.info-popup-content h2 {
+  margin-top: 0;
+}
+
+/* Overlay to block clicks on the map */
+.info-popup-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0); /* Transparent but still blocks clicks */
+  pointer-events: auto;
+}
+
+/* Info button (top-left of the map) */
+.info-popup-button {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  padding: 5px;
+  background-color: transparent;
+  color: black;
+}
+
+.info-popup-button:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Slight hover effect */
+}
+
+/* Icon size */
+.info-icon {
+  font-size: 24px;
+}
+
+/* Popup Dialog Styles */
+.info-popup-dialog {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  width: 70vw; /* Increased width */
+  height: 70vh; /* Increased height */
+  border-radius: 8px;
+  overflow-y: auto;
+}
+
+/* Close Button */
+.close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: black;
+  align-self: flex-end !important;
+}
+
+/* Sponsors Section */
+.info-popup-sponsors {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.sponsor-image {
+  width: 80px;
+  height: 80px;
+}
+
+/* General text styles for links and headings */
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .info-icon {
+    position: fixed !important;
+  }
+  .info-popup-button {
+    position: fixed !important;
+  }
+  .info-popup-container {
+    position: fixed !important;
+    top: 10px;
+    left: 10px;
+  }
+
+  .info-popup-content {
+    width: 90%;
+    top: 5%;
+    height: 80vh;
+  }
+}

@@ -5,6 +5,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import TextField from '@mui/material/TextField';
 import PathsResultInfo from '../PathResultsInfo/PathsResultsInfo';
 
+import Typography from '@mui/material/Typography';
 import ForestOutlinedIcon from '@mui/icons-material/ForestOutlined';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import PedalBikeIcon from '@mui/icons-material/PedalBike';
@@ -13,6 +14,8 @@ import AirIcon from '@mui/icons-material/Air';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
+
+import logo from '../../../src/logo.svg';
 
 const MainSideBar = forwardRef(
   (
@@ -30,6 +33,7 @@ const MainSideBar = forwardRef(
       destination,
       toggleSidebar,
       isSidebarOpen,
+      highlightedPathId,
     },
     ref
   ) => {
@@ -40,10 +44,6 @@ const MainSideBar = forwardRef(
         console.log(position.coords.latitude, position.coords.longitude);
       });
     };
-
-    // const toggleSidebar = () => {
-    //   setIsSidebarOpen(!isSidebarOpen);
-    // };
 
     const cleanedCoordinates = (coordinates) => {
       return `${coordinates.lat.toFixed(2)}, ${coordinates.lng.toFixed(2)}`;
@@ -64,7 +64,25 @@ const MainSideBar = forwardRef(
 
     return (
       <div ref={ref} className={`sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
-        <div className="navbar-row">
+        <div className="main-title-container navbar-row">
+          <Box className="main-title  hide-on-close">
+            {/* Logo on the left */}
+            <img
+              src={logo}
+              alt="Logo"
+              style={{ width: '40px', marginRight: '10px' }}
+            />
+
+            {/* Title */}
+            <Typography
+              variant="primary"
+              component="div"
+              className="main-title-text hide-on-close show-on-mobile"
+              style={{ color: 'green' }}
+            >
+              Green Paths 2.0
+            </Typography>
+          </Box>
           <Button
             className="toggle-button"
             onClick={toggleSidebar}
@@ -78,7 +96,7 @@ const MainSideBar = forwardRef(
           </Button>
         </div>
         {/* Transport Modes Row */}
-        <div className="navbar-content">
+        <div className="navbar-content hide-on-close">
           <div className="navbar-row">
             <ButtonGroup variant="outlined" orientation="horizontal">
               <Button
@@ -140,13 +158,23 @@ const MainSideBar = forwardRef(
                 onClick={() => handleExposureChange(exposure)}
                 sx={{
                   backgroundColor:
-                    exposureType === exposure ? 'primary.main' : 'transparent',
+                    exposureType === exposure
+                      ? exposure === 'greenery'
+                        ? '#4CAF50' // Green for greenery
+                        : exposure === 'noise'
+                          ? '#FFB300' // amber for noise
+                          : '#4DB6AC' // Purple for air quality
+                      : 'transparent',
                   color: exposureType === exposure ? 'white' : 'black',
                   border:
                     exposureType === exposure ? 'none' : '1px solid lightgray',
                   '&:hover': {
                     backgroundColor:
-                      exposureType === exposure ? 'primary.dark' : 'lightgray',
+                      exposure === 'greenery'
+                        ? '#388E3C' // Darker green for greenery hover
+                        : exposure === 'noise'
+                          ? '#FF8C00' // darker amber for noise hover
+                          : '#00897B', // darker teal for air quality hover
                   },
                   '&.MuiButton-text': {
                     padding: '6px 12px',
@@ -167,6 +195,23 @@ const MainSideBar = forwardRef(
               variant="contained"
               onClick={() => handleRouting()}
               disabled={isRoutingDisabled === 1 ? true : false}
+              style={{ color: 'white' }}
+              sx={{
+                backgroundColor:
+                  exposureType === 'greenery'
+                    ? '#4CAF50' // Green for greenery
+                    : exposureType === 'noise'
+                      ? '#FFB300' // amber
+                      : '#4DB6AC', // teal
+                '&:hover': {
+                  backgroundColor:
+                    exposureType === 'greenery'
+                      ? '#388E3C' // Darker green for hover
+                      : exposureType === 'noise'
+                        ? '#FF8C00' // Darker orange for hover
+                        : '#00897B', // Darker teal for hover
+                },
+              }}
             >
               {'Route ' +
                 convertExposureTypeToButtonText(exposureType) +
@@ -195,6 +240,10 @@ const MainSideBar = forwardRef(
                 <PathsResultInfo
                   loading={loading}
                   routeData={routeData}
+                  transportMode={transportMode}
+                  handlePathClick={handlePathClick}
+                  highlightedPathId={highlightedPathId}
+                  exposureType={exposureType}
                   onPathClick={() => {}}
                 />
               )
