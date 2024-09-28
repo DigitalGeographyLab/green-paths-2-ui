@@ -15,8 +15,6 @@ import AirIcon from '@mui/icons-material/Air';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 
-import logo from '../../../src/logo.svg';
-
 const MainSideBar = forwardRef(
   (
     {
@@ -66,11 +64,10 @@ const MainSideBar = forwardRef(
       <div ref={ref} className={`sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
         <div className="main-title-container navbar-row">
           <Box className="main-title  hide-on-close">
-            {/* Logo on the left */}
             <img
-              src={logo}
-              alt="Logo"
-              style={{ width: '40px', marginRight: '10px' }}
+              src={`${process.env.PUBLIC_URL}/GREENTRAVEL_logo_withDGL.jpg`}
+              alt="GREENTRAVEL Logo"
+              style={{ width: '5rem', marginRight: '1rem' }}
             />
 
             {/* Title */}
@@ -78,7 +75,7 @@ const MainSideBar = forwardRef(
               variant="primary"
               component="div"
               className="main-title-text hide-on-close show-on-mobile"
-              style={{ color: 'green' }}
+              style={{ color: 'green', fontSize: '1.5rem' }}
             >
               Green Paths 2.0
             </Typography>
@@ -194,7 +191,7 @@ const MainSideBar = forwardRef(
             <Button
               variant="contained"
               onClick={() => handleRouting()}
-              disabled={isRoutingDisabled === 1 ? true : false}
+              disabled={isRoutingDisabled === 1 || loading ? true : false}
               style={{ color: 'white' }}
               sx={{
                 backgroundColor:
@@ -249,6 +246,20 @@ const MainSideBar = forwardRef(
               )
             )}
           </div>
+        </div>
+
+        <div className="navbar-row navbar-logos hide-on-close">
+          <img
+            className="uaq2-logo"
+            src={`${process.env.PUBLIC_URL}/UAQ20_Logo_Eng.png`}
+            alt="UAQ 2.0 LOGO"
+          />
+          <img
+            className="all-logos"
+            src={`${process.env.PUBLIC_URL}/ALL_logos.jpg`}
+            alt="ALL SPONSORS LOGOS"
+            style={{ width: '5rem', marginRight: '1rem' }}
+          />
         </div>
       </div>
     );

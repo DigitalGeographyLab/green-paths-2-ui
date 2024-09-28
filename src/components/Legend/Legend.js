@@ -25,7 +25,7 @@ const Legend = ({ exposureType }) => {
               }}
             ></span>
             {index === 0
-              ? `≤ ${threshold}`
+              ? 'no data'
               : index === mappings.length - 1
                 ? `> ${mappings[index - 1].threshold}`
                 : `${mappings[index - 1].threshold + 1} - ${threshold}`}

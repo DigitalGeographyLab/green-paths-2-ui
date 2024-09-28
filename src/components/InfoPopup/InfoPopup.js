@@ -94,7 +94,7 @@ const InfoPopup = () => {
             </Typography>
             <Typography variant="body1" gutterBottom>
               Street network data is downloaded from OpenStreetMap (CC-BY-SA)
-              and processed into a street network graph with OpenTripPlanner.
+              using BBBike extracts OpenStreetMap service.
             </Typography>
             <Typography variant="body1" gutterBottom>
               Hourly air quality index (AQI) is derived from the FMI-ENFUSER
@@ -108,7 +108,8 @@ const InfoPopup = () => {
             <Typography variant="body1" gutterBottom>
               Green view (i.e. greenery) layer is derived from analyzing Google
               Street View images (Toikka et al. 2020) and openly available land
-              cover data by HRI.
+              cover data by HRI. The dataset is covering Helsinki, so Espoo and
+              Vantaa are not included.
             </Typography>
 
             <Typography variant="h6" gutterBottom>
@@ -116,8 +117,11 @@ const InfoPopup = () => {
             </Typography>
             <Typography variant="body1" gutterBottom>
               Green path routing tool is developed by the Digital Geography Lab,
-              University of Helsinki, within the Urban Innovative Action: HOPE –
-              Healthy Outdoor Premises for Everyone.
+              University of Helsinki, within the Urban Air Quality 2.0, a joint
+              project between the University of Helsinki, Finnish Meteorological
+              Institute and Helsinki Region Environmental Services Authority
+              HSY. The project is continuum of the Urban Innovative Action: HOPE
+              – Healthy Outdoor Premises for Everyone.
             </Typography>
 
             <Typography variant="h6" gutterBottom>
@@ -125,20 +129,20 @@ const InfoPopup = () => {
             </Typography>
             <Typography variant="body1" gutterBottom>
               <a
-                href="https://github.com/DigitalGeographyLab/hope-green-path-server"
+                href="https://github.com/DigitalGeographyLab/green-paths-2"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                DigitalGeographyLab/hope-green-path-server
+                DigitalGeographyLab/green-paths-2
               </a>
             </Typography>
             <Typography variant="body1" gutterBottom>
               <a
-                href="https://github.com/DigitalGeographyLab/hope-green-path-ui"
+                href="https://github.com/DigitalGeographyLab/green-paths-2-ui"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                DigitalGeographyLab/hope-green-path-ui
+                DigitalGeographyLab/green-paths-2-ui
               </a>
             </Typography>
 
@@ -160,26 +164,21 @@ const InfoPopup = () => {
                 marginTop: 2,
               }}
             >
-              <img
-                src="https://via.placeholder.com/100x100.png?text=HYLogo"
-                alt="University of Helsinki Logo"
-                style={{ width: 80, height: 80 }}
-              />
-              <img
-                src="https://via.placeholder.com/100x100.png?text=HopeLogo"
-                alt="Hope Project Logo"
-                style={{ width: 80, height: 80 }}
-              />
-              <img
-                src="https://via.placeholder.com/100x100.png?text=UIALogo"
-                alt="UIA Logo"
-                style={{ width: 80, height: 80 }}
-              />
-              <img
-                src="https://via.placeholder.com/100x100.png?text=EULogo"
-                alt="EU Logo"
-                style={{ width: 80, height: 80 }}
-              />
+              <div
+                className="navbar-row info-popup-sponsors"
+                style={{ widht: '100% !important' }}
+              >
+                <img
+                  className="uaq2-logo"
+                  src={`${process.env.PUBLIC_URL}/UAQ20_Logo_Eng.png`}
+                  alt="UAQ 2.0 LOGO"
+                />
+                <img
+                  src={`${process.env.PUBLIC_URL}/ALL_logos_disclaimer.jpg`}
+                  alt="SPONSOR Logos"
+                  style={{ width: '100% !important' }}
+                />
+              </div>
             </Box>
           </Box>
         </DialogContent>

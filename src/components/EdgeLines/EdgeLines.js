@@ -27,6 +27,13 @@ const EdgeLines = ({
     const mappings = colorMappings[exposureType];
 
     for (const { threshold, color } of mappings) {
+      if (exposureValue == null) {
+        return {
+          color: 'gray',
+          weight: feature.properties.path_id === highlightedPathId ? 6 : 4, // make inner line thinner than border
+          opacity: 1, // full opacity for inner line
+        };
+      }
       if (exposureValue <= threshold) {
         return {
           color: color,

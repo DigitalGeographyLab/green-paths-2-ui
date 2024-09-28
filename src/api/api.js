@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// LOCAL API BASE URL
-const BASE_URL = 'http://127.0.0.1:8000';
+// get GP2 API URL from environment variables
+const apiUrl = process.env.GP2_API_URL;
 
 export const fetchGreenPathsPathsAndSegments = async (
   origin,
@@ -15,7 +15,7 @@ export const fetchGreenPathsPathsAndSegments = async (
     const formattedOrigin = [origin.lat, origin.lng];
     const formattedDestination = [destination.lat, destination.lng];
 
-    const response = await axios.post(`${BASE_URL}/route/`, {
+    const response = await axios.post(`${apiUrl}/route/`, {
       city: city,
       origin: formattedOrigin,
       destination: formattedDestination,
@@ -27,7 +27,6 @@ export const fetchGreenPathsPathsAndSegments = async (
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching route data:', error);
     throw error;
   }
 };

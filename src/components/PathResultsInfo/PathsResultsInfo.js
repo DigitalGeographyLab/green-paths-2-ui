@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './PathsResultsInfo.css';
-import { convertNames } from '../Conversions/NameConverter';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -164,17 +163,22 @@ const PathsResultInfo = ({
                     exposureType="greenery"
                     exposureValue={feature.properties.greenery_average}
                     goodExposure={true}
+                    aqiUpdatedTimestamp={null}
                   />
 
                   <ExposureBar
                     exposureType="noise"
                     exposureValue={feature.properties.noise_average}
                     goodExposure={false}
+                    aqiUpdatedTimestamp={null}
                   />
                   <ExposureBar
                     exposureType="airQuality"
                     exposureValue={feature.properties.airquality_average}
                     goodExposure={false}
+                    aqiUpdatedTimestamp={
+                      routeData.latest_aqi_file_timestamp ?? null
+                    }
                   />
                 </Box>
               </div>
@@ -188,28 +192,6 @@ const PathsResultInfo = ({
                 }
                 exposureType={exposureType}
               />
-
-              {/* <ul>
-                {Object.entries(convertNames(feature.properties)).map(
-                  ([key, value]) => {
-                    if (
-                      ![
-                        'path_id',
-                        'to_id',
-                        'from_id',
-                        'cumulative_exposure',
-                      ].includes(key)
-                    ) {
-                      return (
-                        <li key={key}>
-                          <strong>{key}:</strong> {value}
-                        </li>
-                      );
-                    }
-                    return null;
-                  }
-                )}
-              </ul> */}
             </div>
           </AccordionDetails>
         </Accordion>

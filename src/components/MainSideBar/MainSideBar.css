@@ -85,7 +85,25 @@
 
 .loading-circle {
   height: 100%;
-  margin-top: 50%;
+  margin-top: 25%;
+}
+
+.navbar-logos {
+  width: 75%;
+  margin: auto;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  display: flex;
+  height: 100%;
+  align-content: flex-end;
+}
+
+.navbar-logos .all-logos {
+  width: 100% !important;
+}
+
+.uaq2-logo {
+  width: 40%;
 }
 
 @media (max-width: 768px) {

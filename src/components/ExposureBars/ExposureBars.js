@@ -2,15 +2,15 @@ import React from 'react';
 import { LinearProgress, Box, Typography } from '@mui/material';
 import './ExposureBars.css';
 
-const ExposureBars = ({ exposureType, exposureValue }) => {
+const ExposureBars = ({ exposureType, exposureValue, aqiUpdatedTimestamp }) => {
   // Define thresholds for each exposure type
   const exposureRanges = {
     greenery: {
-      thresholds: [14, 29, 44, 59, 60], // Greenery ranges
+      thresholds: [10, 20, 30, 40], // Greenery ranges
       goodExposure: true, // Higher is better
     },
     airQuality: {
-      thresholds: [1, 2, 3, 4, 5], // AQI ranges
+      thresholds: [2, 3, 4, 5, 6], // AQI ranges
       goodExposure: false, // Lower is better
     },
     noise: {
@@ -66,6 +66,17 @@ const ExposureBars = ({ exposureType, exposureValue }) => {
     exposureConfig.thresholds,
     exposureConfig.goodExposure
   );
+
+  function formatAqiDateTime(dateTimeString) {
+    // Split the string at 'T' to separate date and time
+    const [date, time] = dateTimeString.split('T');
+
+    // Format time by appending ':00' if it's missing minutes
+    const formattedTime = time.length === 2 ? `${time}:00` : time;
+
+    // Return the date and formatted time
+    return `${date}, ${formattedTime}`;
+  }
 
   // If the exposure value is missing, render a "Not Available" header and gray progress bar
   if (exposureValue === undefined || exposureValue === null) {
@@ -160,51 +171,76 @@ const ExposureBars = ({ exposureType, exposureValue }) => {
             textAlign: 'center',
           }}
         >
-          {exposureType.charAt(0).toUpperCase() + exposureType.slice(1)}
+          {exposureType === 'noise'
+            ? 'Quietness'
+            : exposureType.charAt(0).toUpperCase() + exposureType.slice(1)}
         </Typography>
-
-        {/* Progress Bar */}
         <Box
           sx={{
+            width: '100%', // Full width of the container
+            display: 'flex', // Flexbox layout
+            flexDirection: 'column', // Stack the children vertically
+            alignItems: 'center', // Center horizontally
             position: 'relative',
-            width: '100%', // Take the full width of the container
-            display: 'flex', // Flex for alignment
-            justifyContent: 'center', // Centering the content
           }}
         >
-          {/* Value inside the bar */}
-          <Typography
-            variant="caption"
+          {/* Progress Bar */}
+          <Box
             sx={{
-              position: 'absolute',
-              width: '100%',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              color: '#000', // White text for visibility inside the bar
-              textAlign: 'center',
-              fontWeight: 'bold',
-              pointerEvents: 'none',
-              zIndex: 1,
+              position: 'relative',
+              width: '100%', // Full width of the container
+              display: 'flex', // Flex for alignment
+              justifyContent: 'center', // Centering the content
             }}
           >
-            {exposureValue}
-          </Typography>
+            {/* Value inside the bar */}
+            <Typography
+              variant="caption"
+              sx={{
+                position: 'absolute',
+                width: '100%',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                color: '#000', // Black text for visibility inside the bar
+                textAlign: 'center',
+                fontWeight: 'bold',
+                pointerEvents: 'none',
+                zIndex: 1,
+              }}
+            >
+              {exposureValue}
+            </Typography>
 
-          {/* Linear Progress Bar */}
-          <LinearProgress
-            variant="determinate"
-            value={progress}
-            sx={{
-              height: 20, // Increased height to make the text more visible
-              width: '100%', // Make the bar take the full available width
-              borderRadius: 5,
-              backgroundColor: 'lightgray',
-              '& .MuiLinearProgress-bar': {
-                backgroundColor: barColor, // Set dynamic color based on step
-              },
-            }}
-          />
+            {/* Linear Progress Bar */}
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+              sx={{
+                height: 20, // Increased height for better visibility
+                width: '100%',
+                borderRadius: 5,
+                backgroundColor: 'lightgray',
+                '& .MuiLinearProgress-bar': {
+                  backgroundColor: barColor, // Set dynamic color based on step
+                },
+              }}
+            />
+          </Box>
+
+          {/* AQI Updated Timestamp */}
+          {aqiUpdatedTimestamp && aqiUpdatedTimestamp !== '' && (
+            <Typography
+              variant="body2"
+              sx={{
+                marginTop: 1,
+                color: 'gray',
+                fontSize: '75%',
+              }}
+            >
+              AQI updated: {formatAqiDateTime(aqiUpdatedTimestamp)}
+            </Typography>
+          )}
         </Box>
       </Box>
     </div>

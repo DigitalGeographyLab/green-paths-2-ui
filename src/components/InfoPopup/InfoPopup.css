@@ -18,6 +18,13 @@
   pointer-events: none;
 }
 
+.info-popup-sponsors {
+  width: 100%;
+  margin: auto;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+}
+
 /* Styles for the Info Button */
 .info-popup-button {
   padding: 5px;
@@ -94,10 +101,16 @@
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
   margin: 0 !important;
-  width: 70vw; /* Increased width */
-  height: 70vh; /* Increased height */
+  width: 90vw; /* Adjust the width */
+  height: 90vh; /* Adjust the height */
+  max-width: 1200px; /* Optional: set a max width */
+  overflow-y: auto;
   border-radius: 8px;
   overflow-y: auto;
+}
+
+.info-popup-dialog img {
+  width: 100%;
 }
 
 /* Close Button */
@@ -116,6 +129,10 @@
   align-items: center;
   gap: 10px;
   margin-top: 16px;
+}
+
+.info-popup-sponsors .uaq2-logo {
+  width: 40%;
 }
 
 .sponsor-image {

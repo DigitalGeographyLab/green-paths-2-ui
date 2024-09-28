@@ -5,10 +5,12 @@ import {
   CircleMarker,
   Popup,
   useMapEvents,
+  GeoJSON,
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './MainMap.css';
+import * as turf from '@turf/turf';
 
 import { fetchGreenPathsPathsAndSegments } from '../../api/api';
 import MainSideBar from '../MainSideBar/MainSideBar';
@@ -40,6 +42,8 @@ function MyMap() {
 
   const [isPathClicked, setIsPathClicked] = useState(false);
 
+  // const [hmaBoundaryPoly, setHmaBoundaryPoly] = useState(null);
+
   const markerRef = useRef(null);
 
   const mapRef = useRef();
@@ -49,54 +53,62 @@ function MyMap() {
 
   let clickedOnPath = false; // Use this flag to detect if a path was clicked
 
-  // const boundingBox = [
-  //   [60.4, 24.6], // Top left corner
-  //   [60.4, 25.3], // Top right corner
-  //   [60.0, 25.3], // Bottom right corner
-  //   [60.0, 24.6], // Bottom left corner
-  // ];
+  const [hmaBoundaryLine, setHmaBoundaryLine] = useState(null);
 
-  const helsinkiBorder = [
-    [60.2971, 24.9111],
-    [60.2946, 24.8252],
-    [60.262, 24.8154],
-    [60.215, 24.8501],
-    [60.1872, 24.9276],
-    [60.1801, 24.9635],
-    [60.1627, 25.0225],
-    [60.168, 25.0692],
-    [60.1982, 25.1154],
-    [60.2364, 25.0787],
-    [60.2682, 25.0201],
-    [60.2971, 24.9111],
-  ];
+  useEffect(() => {
+    fetch('/boundaries/HMA_single_line_boundaries_4326.geojson')
+      .then((response) => response.json())
+      .then((data) => setHmaBoundaryLine(data))
+      .catch((err) => console.error('Error loading GeoJSON:', err));
+  }, []);
 
-  // allowed bounds
-  const bounds = L.latLngBounds(helsinkiBorder);
-
-  // const getColor = (value) => {
-  //     if (value < 15) return '#000';
-  //     if (value < 25) return 'orange';
-  //     return 'green';
-  // };
-
-  // const getWeight = (id) => {
-  //     return highlightedSegments.includes(id) ? 5 : 2;  // Thicker line for highlighted segments
-  //   };
+  useEffect(() => {
+    if (hmaBoundaryLine && mapRef.current) {
+      const geoJsonLayer = L.geoJSON(hmaBoundaryLine);
+      const bounds = geoJsonLayer.getBounds();
+      mapRef.current.fitBounds(bounds, { padding: [150, 150] });
+      // mapRef.current.addLayer(geoJsonLayer); // Ensure the layer is added to the map
+      const map = mapRef.current;
+      // map.setMaxBounds(bounds, { padding: [1000, 1000] }); // Limit the map to the bounding box
+      map.setMinZoom(10); // Restrict zoom-out level
+      map.setZoom(13); // Set initial zoom level
+    }
+  }, [hmaBoundaryLine]);
 
   const MapClickHandler = () => {
     useMapEvents({
       click(e) {
-        if (!clickedOnPath && bounds.contains(e.latlng)) {
-          setPopupLocation(e.latlng);
-          setClickedLocation(e.latlng);
-          setPopupVisible(true);
+        if (hmaBoundaryLine && e.latlng) {
+          const clickedLatLng = [e.latlng.lng, e.latlng.lat]; // Turf uses [lng, lat] order
+          const point = turf.point(clickedLatLng);
+
+          let isInside = false;
+
+          hmaBoundaryLine.features.forEach((feature) => {
+            const polygon = turf.polygon(feature.geometry.coordinates);
+            if (turf.booleanPointInPolygon(point, polygon)) {
+              isInside = true;
+            }
+          });
+
+          if (isInside) {
+            console.log('Clicked inside the boundary');
+            setPopupLocation(e.latlng);
+            setClickedLocation(e.latlng);
+            setPopupVisible(true);
+          } else {
+            console.log('Clicked outside the boundary');
+            handleError(
+              'Please select a location within Helsinki Metropolitan Area',
+              3000
+            );
+          }
         }
-        clickedOnPath = false; // Reset after handling the click
       },
     });
     return null;
   };
+
   useEffect(() => {
     if (popupVisible && markerRef.current) {
       markerRef.current.openPopup(); // Ensure popup is opened when marker is created
@@ -132,6 +144,11 @@ function MyMap() {
       );
       setRouteData(routeData);
 
+      // set error if only 1 path is returned
+      if (routeData.path_FC.features.length === 1) {
+        handleError('Only fastest path found, no alternative paths available');
+      }
+
       if (mapRef.current && origin && destination) {
         const bounds = L.latLngBounds([origin, destination]);
         mapRef.current.fitBounds(bounds, { padding: [50, 50] });
@@ -150,7 +167,11 @@ function MyMap() {
         // document.getElementById('your-element-id').scrollIntoView({ behavior: 'smooth' });
       }
     } catch (err) {
-      setError('Failed to fetch route data');
+      if (err.response && err.response.data && err.response.data.detail) {
+        handleError(err.response.data.detail); // Extract error message from "detail"
+      } else {
+        handleError('An unknown error occurred.'); // Fallback for generic errors
+      }
     } finally {
       setLoading(false);
     }
@@ -171,54 +192,34 @@ function MyMap() {
   };
 
   const handlePathClick = (pathId, _, e) => {
-    // if (e != null) {
-    //   e.stopPropagation(); // Prevent the map click from firing
-    // }
-    clickedOnPath = true; // Path was clicked
+    clickedOnPath = true;
     setHighlightedPathId(pathId);
   };
 
   const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev); // Toggle sidebar open/close state
+    setIsSidebarOpen((prev) => !prev);
   };
 
   useEffect(() => {
     if (mapRef.current) {
       setTimeout(() => {
         mapRef.current.invalidateSize(); // Invalidate map size to update it properly after sidebar toggles
-      }, 300); // Add a small delay to match the CSS transition duration
+      }, 300);
     }
   }, [isSidebarOpen]); // Re-run this effect whenever the sidebar state changes
 
-  // TODO: MAKE WORK
-  const handleError = () => {
+  const handleError = (errorMessage, timeoutSeconds) => {
     // Display the error message immediately
-    setError('Something went wrong!');
+    setError(errorMessage);
 
     const timer = setTimeout(() => {
       setError(null);
-    }, 5000);
+    }, timeoutSeconds || 5000);
 
     return () => clearTimeout(timer);
   };
 
   const isRoutingDisabled = !origin | !destination;
-
-  useEffect(() => {
-    if (mapRef.current && mapRef.current.leafletElement) {
-      const map = mapRef.current.leafletElement;
-
-      // Check if panes are not already created to avoid re-creating them
-      if (!map.getPane('borderPane')) {
-        map.createPane('borderPane');
-        map.getPane('borderPane').style.zIndex = 399;
-      }
-      if (!map.getPane('linePane')) {
-        map.createPane('linePane');
-        map.getPane('linePane').style.zIndex = 400;
-      }
-    }
-  }, [mapRef]);
 
   return (
     <div className="main-map-container">
@@ -249,12 +250,10 @@ function MyMap() {
         >
           {routeData && <Legend exposureType={exposureType} />}
           <InfoPopup />
-
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
           />
-
           <MapClickHandler />
           {popupVisible && popupLocation && (
             <Popup
@@ -267,7 +266,6 @@ function MyMap() {
               />
             </Popup>
           )}
-
           {routeData && (
             <EdgeLines
               routeData={routeData}
@@ -279,15 +277,21 @@ function MyMap() {
               mapRef={mapRef}
             />
           )}
-
           {origin && <CircleMarker center={origin} color="green" radius={5} />}
           {destination && (
             <CircleMarker center={destination} color="purple" radius={5} />
           )}
 
-          {/* TODO: MAKE WORK */}
-          {/* Render Helsinki with normal color */}
-          {/* <Polygon positions={helsinkiBorder} pathOptions={{ color: 'blue', fillOpacity: 0.5 }} /> */}
+          {hmaBoundaryLine && (
+            <GeoJSON
+              data={hmaBoundaryLine}
+              style={{
+                color: 'gray',
+                fillOpacity: 0,
+                zIndex: 999,
+              }}
+            />
+          )}
         </MapContainer>
       </div>
     </div>
