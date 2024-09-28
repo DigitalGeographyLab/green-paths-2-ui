@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // get GP2 API URL from environment variables
-const apiUrl = process.env.GP2_API_URL;
+const apiUrl = process.env.REACT_APP_GP2_API_URL;
 
 export const fetchGreenPathsPathsAndSegments = async (
   origin,
