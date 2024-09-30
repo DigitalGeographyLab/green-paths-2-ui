@@ -63,7 +63,9 @@ const InfoPopup = () => {
               The app is a prototype and it is not developed or maintained
               currently. Therefore it may not be functional at all times and its
               street data is outdated (please consider the route suggestions as
-              potentially imperfect).
+              potentially imperfect). The app is also not optimized for everyday
+              use (speed, concurrent usage), but rather for demonstration
+              purposes.
             </Typography>
 
             <Typography variant="h6" gutterBottom>
@@ -83,10 +85,10 @@ const InfoPopup = () => {
             </Typography>
             <Typography variant="body1" gutterBottom>
               This tool guides you to take pleasant walks to your destinations
-              in Helsinki. You may compare routes from the shortest to the least
-              polluted or quietest and find your own optimal way. The more you
-              value peaceful and pleasant urban environments, the longer routes
-              you may be ready to take.
+              in Helsinki Region. You may compare routes from the shortest to
+              the least polluted or quietest and find your own optimal way. The
+              more you value peaceful and pleasant urban environments, the
+              longer routes you may be ready to take.
             </Typography>
 
             <Typography variant="h6" gutterBottom>
@@ -102,26 +104,26 @@ const InfoPopup = () => {
             </Typography>
             <Typography variant="body1" gutterBottom>
               Traffic noise data is based on an assessment conducted by the city
-              of Helsinki (CC BY 4.0). It is a modelled GIS data representing
-              typical traffic noise levels.
+              of Helsinki, City of Espoo, City of Vantaa and Kauniainen. It is a
+              modelled GIS data representing typical traffic noise levels.
             </Typography>
             <Typography variant="body1" gutterBottom>
               Green view (i.e. greenery) layer is derived from analyzing Google
               Street View images (Toikka et al. 2020) and openly available land
-              cover data by HRI. The dataset is covering Helsinki, so Espoo and
-              Vantaa are not included.
+              cover data by Helsinki Region Infoshare. The dataset is covering
+              Helsinki, so Espoo and Vantaa are not included.
             </Typography>
 
             <Typography variant="h6" gutterBottom>
               Team
             </Typography>
             <Typography variant="body1" gutterBottom>
-              Green path routing tool is developed by the Digital Geography Lab,
-              University of Helsinki, within the Urban Air Quality 2.0, a joint
-              project between the University of Helsinki, Finnish Meteorological
-              Institute and Helsinki Region Environmental Services Authority
-              HSY. The project is continuum of the Urban Innovative Action: HOPE
-              – Healthy Outdoor Premises for Everyone.
+              Green path 2.0 routing tool is developed by the Digital Geography
+              Lab, University of Helsinki, within the Urban Air Quality 2.0, a
+              joint project between the University of Helsinki, Finnish
+              Meteorological Institute and Helsinki Region Environmental
+              Services Authority HSY. The project is continuum of the Urban
+              Innovative Action: HOPE – Healthy Outdoor Premises for Everyone.
             </Typography>
 
             <Typography variant="h6" gutterBottom>
@@ -146,14 +148,14 @@ const InfoPopup = () => {
               </a>
             </Typography>
 
-            <Typography variant="body1" gutterBottom>
-              HOPE project is co-financed by the European Regional Development
-              Fund through the Urban Innovative Actions Initiative.
-            </Typography>
-
             {/* Sponsor Logos */}
             <Typography variant="h6" gutterBottom>
               Sponsors:
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              GREENTRAVEL project is funded by the European Research Council
+              (ERC). Urban Airquality 2.0 project is funded by Technology
+              Industries of Finland Centennial Foundation.
             </Typography>
             <Box
               sx={{
